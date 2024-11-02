@@ -1,8 +1,9 @@
+// src/components/EncryptionTool.js
 import React, { useState } from 'react';
 import axios from 'axios';
 import './EncryptionTool.css';
 
-const EncryptionTool = () => {
+const EncryptionTool = ({ isAuthenticated }) => {
     const [file, setFile] = useState(null);
     const [key, setKey] = useState('');
     const [mode, setMode] = useState('encrypt');
@@ -10,11 +11,6 @@ const EncryptionTool = () => {
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
-    };
-
-    const handleKeyChange = (e) => {
-        const encodedKey = btoa(e.target.value); // Encode key to Base64
-        setKey(encodedKey);
     };
 
     const handleModeChange = (e) => {
@@ -32,11 +28,6 @@ const EncryptionTool = () => {
         formData.append('file', file);
         if (mode === 'decrypt') {
             formData.append('key', key);
-        }
-
-        // Log the FormData entries
-        for (let [key, value] of formData.entries()) {
-            console.log(key, value);
         }
 
         try {
@@ -60,11 +51,7 @@ const EncryptionTool = () => {
             link.href = url;
 
             // Set the download filename based on the mode
-            if (mode === 'encrypt') {
-                link.setAttribute('download', `${file.name}.enc`); // Encrypted file retains .enc
-            } else {
-                link.setAttribute('download', file.name.replace(/\.enc$/, '')); // Decrypted file uses original name
-            }
+            link.setAttribute('download', mode === 'encrypt' ? `${file.name}.enc` : file.name.replace(/\.enc$/, ''));
 
             document.body.appendChild(link);
             link.click();
@@ -106,7 +93,12 @@ const EncryptionTool = () => {
                     </label>
                 )}
                 
-                <button type="submit">{mode === 'encrypt' ? 'Encrypt File' : 'Decrypt File'}</button>
+                {/* Only show the button if the user is authenticated */}
+                {isAuthenticated ? (
+                    <button type="submit">{mode === 'encrypt' ? 'Encrypt File' : 'Decrypt File'}</button>
+                ) : (
+                    <p>Please log in to make a transaction.</p>
+                )}
             </form>
             {message && <p>{message}</p>}
         </div>

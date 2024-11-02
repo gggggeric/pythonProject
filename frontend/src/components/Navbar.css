@@ -4,6 +4,7 @@
     background-color: #181C14; /* Navbar background color */
     padding: 15px 30px; /* Increased padding for a larger navbar */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Subtle shadow for depth */
+    border-radius: 8px; /* Add rounded corners */
 }
 
 .navbar-container {
@@ -39,7 +40,7 @@
     text-decoration: none; /* Remove underline */
     font-size: 20px; /* Increased font size for links */
     padding: 10px 15px; /* Padding for clickable area */
-    border-radius: 5px; /* Rounded corners */
+    border-radius: 5px; /* Rounded corners for links */
     transition: background-color 0.3s, color 0.3s; /* Smooth transition for hover effects */
 }
 
