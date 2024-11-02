@@ -1,0 +1,62 @@
+/* Navbar.css */
+
+.navbar {
+    background-color: #181C14; /* Navbar background color */
+    padding: 15px 30px; /* Increased padding for a larger navbar */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Subtle shadow for depth */
+}
+
+.navbar-container {
+    display: flex;
+    justify-content: space-between; /* Space between logo and menu */
+    align-items: center; /* Center items vertically */
+}
+
+.navbar-logo {
+    color: white; /* Logo text color */
+    font-size: 28px; /* Increased font size for logo */
+    text-decoration: none; /* Remove underline */
+    transition: color 0.3s; /* Smooth transition for hover effect */
+}
+
+.navbar-logo:hover {
+    color: #61dafb; /* Logo color change on hover */
+}
+
+.navbar-menu {
+    list-style: none; /* Remove default list styling */
+    display: flex; /* Display menu items in a row */
+    margin: 0; /* Remove default margin */
+    padding: 0; /* Remove default padding */
+}
+
+.navbar-item {
+    margin-left: 30px; /* Increased spacing between items */
+}
+
+.navbar-links {
+    color: white; /* Link text color */
+    text-decoration: none; /* Remove underline */
+    font-size: 20px; /* Increased font size for links */
+    padding: 10px 15px; /* Padding for clickable area */
+    border-radius: 5px; /* Rounded corners */
+    transition: background-color 0.3s, color 0.3s; /* Smooth transition for hover effects */
+}
+
+.navbar-links:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* Light background on hover */
+    color: #61dafb; /* Change link color on hover */
+}
+
+/* Media query for responsiveness */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 10px 15px; /* Reduced padding on smaller screens */
+    }
+    .navbar-item {
+        margin-left: 15px; /* Adjusted margin on smaller screens */
+    }
+    .navbar-links {
+        font-size: 18px; /* Slightly smaller font size for links */
+    }
+}

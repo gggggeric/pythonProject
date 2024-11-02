@@ -1,0 +1,97 @@
+/* EncryptionTool.css */
+
+.encryption-tool {
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 30px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    background-color: #3C3D37; /* Consistent background color */
+    color: white;
+    text-align: center;
+}
+
+.encryption-tool h1 {
+    font-size: 28px;
+    margin-bottom: 25px;
+}
+
+.encryption-tool form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.encryption-tool label {
+    width: 100%;
+    margin-bottom: 15px;
+    text-align: left;
+    font-weight: bold;
+}
+
+.encryption-tool input[type="file"],
+.encryption-tool input[type="text"],
+.encryption-tool select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f0f0f0;
+    color: #333;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.encryption-tool button {
+    padding: 12px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.encryption-tool button:hover {
+    background-color: #0056b3;
+}
+
+.encryption-tool p {
+    margin-top: 20px;
+    color: #61dafb; /* Consistent with navbar hover color */
+    font-weight: bold;
+}
+/* src/components/EncryptionTool.css */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Ensure it's on top of other content */
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    text-align: center;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+}
+
+.modal-content button {
+    margin-top: 15px;
+}
