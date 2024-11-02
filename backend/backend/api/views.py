@@ -57,14 +57,13 @@ def decrypt_view(request):
     # Decode the key from base64
     try:
         key = base64.b64decode(key_input)
-        print(f"Decoded key length: {len(key)}")  # Log the length
         if len(key) != 16:
             raise ValueError("Invalid key length.")
     except Exception as e:
         return Response({"error": f"Invalid key: {e}"}, status=status.HTTP_400_BAD_REQUEST)
 
-    file_name = file.name
-    encrypted_file_path = os.path.join(os.getcwd(), 'backend', 'api', 'uploads', file_name)
+    # Save the uploaded encrypted file
+    encrypted_file_path = os.path.join(os.getcwd(), 'backend', 'api', 'uploads', file.name)
 
     # Ensure 'uploads' directory exists
     upload_dir = os.path.join(os.getcwd(), 'backend', 'api', 'uploads')
@@ -77,12 +76,18 @@ def decrypt_view(request):
 
     # Decrypt the file
     decrypt_file(encrypted_file_path, key)
-    decrypted_file_path = encrypted_file_path[:-4]  # Remove '.enc'
 
-    # Prepare response
+    # Construct the decrypted file path
+    decrypted_file_path = encrypted_file_path[:-4]  # Remove the '.enc' extension
+    print(f"Decrypted file path: {decrypted_file_path}")  # Debugging statement
+
+    # Prepare response with the decrypted file
     with open(decrypted_file_path, 'rb') as f:
         response = HttpResponse(f.read(), content_type='application/octet-stream')
-        response['Content-Disposition'] = f'attachment; filename="{os.path.basename(decrypted_file_path)}"'
+        # Set the original filename for the response
+        original_filename = os.path.basename(decrypted_file_path)  # Ensure we get the name without path
+        response['Content-Disposition'] = f'attachment; filename="{original_filename}"'
+        print(f"Response filename: {original_filename}")  # Debugging statement
 
     # Cleanup: Optionally delete the temporary files
     os.remove(encrypted_file_path)

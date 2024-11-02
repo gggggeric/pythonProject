@@ -28,9 +28,6 @@ def encrypt_file(file_path, key):
 
 
 
-
-
-
 def decrypt_file(file_path, key):
     """Decrypts the contents of the file with the provided AES key."""
     with open(file_path, 'rb') as f:
@@ -40,7 +37,12 @@ def decrypt_file(file_path, key):
     cipher = AES.new(key, AES.MODE_CBC, iv)
     plaintext = unpad(cipher.decrypt(ciphertext), AES.block_size)
 
-    # Save the decrypted content to a new file
-    decrypted_file_path = file_path[:-4]  # Remove '.enc'
+    # Save the decrypted content to a new file, removing '.enc' extension
+    decrypted_file_path = file_path[:-4]  # Remove the last 4 characters ('.enc')
+    
     with open(decrypted_file_path, 'wb') as f:
         f.write(plaintext)
+
+    print(f"Decrypted file saved as: {decrypted_file_path}")  # Confirm the name
+
+
