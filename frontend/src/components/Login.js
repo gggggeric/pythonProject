@@ -22,6 +22,7 @@ const Login = ({ setIsAuthenticated }) => {
             console.log('Login successful:', response.data);
             setIsAuthenticated(true); // Update state to reflect successful authentication
             localStorage.setItem('isAuthenticated', 'true'); // Persist authentication status
+            alert('Login successful! Welcome back!');
             navigate('/'); // Redirect to the protected route
         } catch (error) {
             console.error('There was an error logging in!', error);
