@@ -1,13 +1,13 @@
-// src/components/EncryptionTool.js
 import React, { useState } from 'react';
 import axios from 'axios';
 import './EncryptionTool.css';
 
-const EncryptionTool = ({ isAuthenticated }) => {
+const EncryptionTool = ({ isAuthenticated, setEncryptionKey }) => {
     const [file, setFile] = useState(null);
     const [key, setKey] = useState('');
     const [mode, setMode] = useState('encrypt');
     const [message, setMessage] = useState('');
+    const [loading, setLoading] = useState(false); // Added loading state
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
@@ -24,43 +24,70 @@ const EncryptionTool = ({ isAuthenticated }) => {
             return;
         }
 
+        // Optionally validate key length if in decrypt mode
+        if (mode === 'decrypt' && key.length === 0) {
+            setMessage('Please provide a decryption key.');
+            return;
+        }
+
         const formData = new FormData();
         formData.append('file', file);
         if (mode === 'decrypt') {
             formData.append('key', key);
         }
 
+        setLoading(true); // Set loading state to true
         try {
             const endpoint = mode === 'encrypt' ? '/api/encrypt/' : '/api/decrypt/';
             const response = await axios.post(`http://localhost:8000${endpoint}`, formData, {
-                responseType: 'blob',
+                responseType: mode === 'decrypt' ? 'blob' : 'json',
                 headers: { 'Content-Type': 'multipart/form-data' },
             });
 
             // Handle the response based on the mode
             if (mode === 'encrypt') {
-                const encryptionKey = response.headers['encryption-key'];
-                if (encryptionKey) {
-                    alert(`Encryption successful! Your key is: ${encryptionKey}. Please keep it safe.`);
-                }
+                const { encryption_key, file_name, file } = response.data;
+                alert(`Encryption successful! Your key is: ${encryption_key}. Please keep it safe.`);
+                setEncryptionKey(encryption_key);
+
+                // Trigger download of the encrypted file
+                const blob = new Blob([Uint8Array.from(atob(file), c => c.charCodeAt(0))]);
+                const link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.setAttribute('download', file_name);
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
             }
 
-            // Download the response file
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement('a');
-            link.href = url;
+            if (mode === 'decrypt') {
+                const contentDisposition = response.headers['content-disposition'];
+                let original_filename = file.name.replace('.enc', ''); // Use original file name as fallback
+                if (contentDisposition) {
+                    const matches = contentDisposition.match(/filename="?([^";]+)"?/);
+                    if (matches && matches[1]) {
+                        original_filename = matches[1];
+                    }
+                }
 
-            // Set the download filename based on the mode
-            link.setAttribute('download', mode === 'encrypt' ? `${file.name}.enc` : file.name.replace(/\.enc$/, ''));
+                // Use the response.data directly as the Blob
+                const blob = response.data;
 
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
+                // Trigger download of the decrypted file
+                const link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.setAttribute('download', original_filename);
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+            }
 
             setMessage('File processed successfully.');
         } catch (error) {
             console.error('Error processing the file', error.response?.data || error);
-            setMessage(error.response?.data?.message || 'There was an error processing your request.');
+            setMessage(error.response?.data?.error || 'There was an error processing your request.');
+        } finally {
+            setLoading(false); // Reset loading state
         }
     };
 
@@ -93,9 +120,10 @@ const EncryptionTool = ({ isAuthenticated }) => {
                     </label>
                 )}
                 
-                {/* Only show the button if the user is authenticated */}
                 {isAuthenticated ? (
-                    <button type="submit">{mode === 'encrypt' ? 'Encrypt File' : 'Decrypt File'}</button>
+                    <button type="submit" disabled={loading}>
+                        {loading ? 'Processing...' : (mode === 'encrypt' ? 'Encrypt File' : 'Decrypt File')}
+                    </button>
                 ) : (
                     <p>Please log in to make a transaction.</p>
                 )}

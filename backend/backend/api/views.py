@@ -6,6 +6,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework import status
 from .encryption_tool import encrypt_file, decrypt_file, generate_key
+from django.http import HttpResponse
 import base64
 import os
 
@@ -33,17 +34,19 @@ def encrypt_view(request):
     encrypt_file(temp_file_path, key)
     encrypted_file_path = temp_file_path + '.enc'
 
-    # Prepare response
+    # Prepare the response
     with open(encrypted_file_path, 'rb') as f:
-        response = HttpResponse(f.read(), content_type='application/octet-stream')
-        response['Content-Disposition'] = f'attachment; filename="{file_name}.enc"'
-        response['Encryption-Key'] = base64.b64encode(key).decode()
+        response_data = {
+            "file": base64.b64encode(f.read()).decode(),
+            "encryption_key": base64.b64encode(key).decode(),
+            "file_name": f"{file_name}.enc"
+        }
 
     # Cleanup: Optionally delete the temporary files
     os.remove(temp_file_path)
     os.remove(encrypted_file_path)
 
-    return response
+    return Response(response_data, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 def decrypt_view(request):
@@ -62,14 +65,12 @@ def decrypt_view(request):
     except Exception as e:
         return Response({"error": f"Invalid key: {e}"}, status=status.HTTP_400_BAD_REQUEST)
 
-    # Save the uploaded encrypted file
-    encrypted_file_path = os.path.join(os.getcwd(), 'backend', 'api', 'uploads', file.name)
-
     # Ensure 'uploads' directory exists
     upload_dir = os.path.join(os.getcwd(), 'backend', 'api', 'uploads')
     os.makedirs(upload_dir, exist_ok=True)
 
     # Save the uploaded encrypted file
+    encrypted_file_path = os.path.join(upload_dir, file.name)
     with open(encrypted_file_path, 'wb') as f:
         for chunk in file.chunks():
             f.write(chunk)
@@ -85,7 +86,7 @@ def decrypt_view(request):
     with open(decrypted_file_path, 'rb') as f:
         response = HttpResponse(f.read(), content_type='application/octet-stream')
         # Set the original filename for the response
-        original_filename = os.path.basename(decrypted_file_path)  # Ensure we get the name without path
+        original_filename = os.path.basename(decrypted_file_path)  # Get the name without path
         response['Content-Disposition'] = f'attachment; filename="{original_filename}"'
         print(f"Response filename: {original_filename}")  # Debugging statement
 

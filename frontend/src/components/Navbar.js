@@ -1,25 +1,40 @@
-// src/components/Navbar.js
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faUserPlus, faSignInAlt, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faUserPlus, faSignInAlt, faSignOutAlt, faBell } from '@fortawesome/free-solid-svg-icons';
 import './Navbar.css';
 
-const Navbar = ({ isAuthenticated, setIsAuthenticated }) => {
-    const navigate = useNavigate(); // Using useNavigate for programmatic navigation
+const Navbar = ({ isAuthenticated, setIsAuthenticated, encryptionKey }) => {
+    const navigate = useNavigate();
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [notifications, setNotifications] = useState([]);
 
     useEffect(() => {
-        // Check local storage for authentication state on component mount
         const authStatus = localStorage.getItem('isAuthenticated') === 'true';
         setIsAuthenticated(authStatus);
     }, [setIsAuthenticated]);
 
+    useEffect(() => {
+        // Update notifications state when encryptionKey changes
+        if (encryptionKey) {
+            setNotifications([`Your encryption key: ${encryptionKey}`]);
+        }
+    }, [encryptionKey]);
+
     const handleLogout = () => {
         if (window.confirm("Are you sure you want to logout?")) {
-            setIsAuthenticated(false); // Update state
-            localStorage.removeItem('isAuthenticated'); // Clear local storage
-            navigate('/'); // Redirect to home page after logout
+            setIsAuthenticated(false);
+            localStorage.removeItem('isAuthenticated');
+            navigate('/');
         }
+    };
+
+    const toggleDropdown = () => {
+        setDropdownOpen(prev => !prev);
+    };
+
+    const clearNotifications = () => {
+        setNotifications([]);
     };
 
     return (
@@ -34,7 +49,7 @@ const Navbar = ({ isAuthenticated, setIsAuthenticated }) => {
                             <FontAwesomeIcon icon={faHome} /> Home
                         </Link>
                     </li>
-                    {!isAuthenticated && ( // Show Register link only if not authenticated
+                    {!isAuthenticated && (
                         <li className="navbar-item">
                             <Link to="/register" className="navbar-links">
                                 <FontAwesomeIcon icon={faUserPlus} /> Register
@@ -48,11 +63,36 @@ const Navbar = ({ isAuthenticated, setIsAuthenticated }) => {
                             </Link>
                         </li>
                     ) : (
-                        <li className="navbar-item" onClick={handleLogout}>
-                            <span className="navbar-links" style={{ cursor: 'pointer' }}>
-                                <FontAwesomeIcon icon={faSignOutAlt} /> Logout
-                            </span>
-                        </li>
+                        <>
+                            <li className="navbar-item" onClick={toggleDropdown}>
+                                <span className="navbar-links notification">
+                                    <FontAwesomeIcon icon={faBell} /> Notifications
+                                </span>
+                                {dropdownOpen && (
+                                    <div className="notification-dropdown">
+                                        {notifications.length > 0 ? (
+                                            <>
+                                                {notifications.map((note, index) => (
+                                                    <div key={index} className="notification-item">
+                                                        {note}
+                                                    </div>
+                                                ))}
+                                                <button className="clear-notifications" onClick={clearNotifications}>
+                                                    Clear Notifications
+                                                </button>
+                                            </>
+                                        ) : (
+                                            <div className="notification-item">No notifications at the moment</div>
+                                        )}
+                                    </div>
+                                )}
+                            </li>
+                            <li className="navbar-item" onClick={handleLogout}>
+                                <span className="navbar-links" style={{ cursor: 'pointer' }}>
+                                    <FontAwesomeIcon icon={faSignOutAlt} /> Logout
+                                </span>
+                            </li>
+                        </>
                     )}
                 </ul>
             </div>
