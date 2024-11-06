@@ -7,7 +7,7 @@
     border: 1px solid #ccc;
     border-radius: 10px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    background-color: #3C3D37; /* Consistent background color */
+    background-color: #3C3D37;
     color: white;
     text-align: center;
 }
@@ -53,6 +53,7 @@
     cursor: pointer;
     font-size: 16px;
     transition: background-color 0.3s;
+    animation: buttonAnimation 0.5s ease-in-out;
 }
 
 .encryption-tool button:hover {
@@ -61,37 +62,138 @@
 
 .encryption-tool p {
     margin-top: 20px;
-    color: #61dafb; /* Consistent with navbar hover color */
+    color: #61dafb;
     font-weight: bold;
 }
-/* src/components/EncryptionTool.css */
 
+/* Modal styles */
 .modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.7);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000; /* Ensure it's on top of other content */
+    z-index: 1000;
+    animation: fadeIn 0.5s ease-out;
 }
 
 .modal-content {
-    background: white;
+    background: #3C3D37;
     padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     width: 300px;
     text-align: center;
+    color: white;
+    opacity: 0;
+    animation: fadeInContent 0.5s forwards 0.3s;
 }
 
 .modal-content h2 {
     margin-top: 0;
+    font-size: 22px;
+    color: #61dafb;
 }
 
 .modal-content button {
     margin-top: 15px;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    animation: buttonAnimation 0.5s ease-in-out;
+}
+
+.modal-content button:hover {
+    background-color: #0056b3;
+}
+
+/* Progress bars */
+.progress-bars {
+    margin-top: 15px;
+    opacity: 0;
+    animation: fadeInContent 0.5s forwards 0.5s;
+}
+
+.progress-bar label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #61dafb;
+}
+
+progress {
+    width: 100%;
+    height: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+    opacity: 0;
+    animation: fadeInProgress 1s forwards 1s;
+}
+
+progress::-webkit-progress-bar {
+    background-color: #333;
+    border-radius: 10px;
+}
+
+progress::-webkit-progress-value {
+    background-color: #007bff;
+    border-radius: 10px;
+}
+/* Error message styling */
+.error-message {
+    color: red;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+
+/* Keyframe animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInContent {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInProgress {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes buttonAnimation {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
