@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome, faUserPlus, faSignInAlt, faSignOutAlt, faBell } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faUserPlus, faSignInAlt, faSignOutAlt, faBell, faQuestionCircle, faCog } from '@fortawesome/free-solid-svg-icons';
 import './Navbar.css';
+import logo from '../assets/images/logo1.png';
 
 const Navbar = ({ isAuthenticated, setIsAuthenticated, encryptionKey }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [notifications, setNotifications] = useState([]);
-    const [logoutModal, setLogoutModal] = useState(false); // Modal for logout success
-    const [confirmLogout, setConfirmLogout] = useState(false); // Modal for logout confirmation
+    const [logoutModal, setLogoutModal] = useState(false);
+    const [confirmLogout, setConfirmLogout] = useState(false);
+    const [fontSize, setFontSize] = useState(16); // Default font size
+    const [settingsDropdownOpen, setSettingsDropdownOpen] = useState(false);
 
     useEffect(() => {
         const authStatus = localStorage.getItem('isAuthenticated') === 'true';
@@ -23,34 +26,54 @@ const Navbar = ({ isAuthenticated, setIsAuthenticated, encryptionKey }) => {
         }
     }, [encryptionKey]);
 
+    // Set font size based on current route
+    useEffect(() => {
+        const path = location.pathname;
+        let newFontSize = 16; // Default font size
+
+        if (path.includes('help')) {
+            newFontSize = 18; // Example for help page
+        } else if (path.includes('login')) {
+            newFontSize = 14; // Example for login page
+        } else if (path.includes('register')) {
+            newFontSize = 20; // Example for register page
+        }
+        
+        setFontSize(newFontSize);
+        document.documentElement.style.setProperty('--base-font-size', `${newFontSize}px`);
+    }, [location]);
+
     const handleLogoutClick = () => {
-        setConfirmLogout(true); // Show confirmation modal
+        setConfirmLogout(true);
     };
 
     const handleLogoutConfirm = () => {
         setIsAuthenticated(false);
         localStorage.removeItem('isAuthenticated');
-        setConfirmLogout(false); // Hide confirmation modal
-        setLogoutModal(true); // Show success modal
+        setConfirmLogout(false);
+        setLogoutModal(true);
         setTimeout(() => {
-            setLogoutModal(false); // Hide success modal after 2 seconds
+            setLogoutModal(false);
             navigate('/');
         }, 2000);
     };
 
     const handleLogoutCancel = () => {
-        setConfirmLogout(false); // Hide confirmation modal
+        setConfirmLogout(false);
     };
 
     const toggleDropdown = () => {
         setDropdownOpen(prev => !prev);
     };
 
+    const toggleSettingsDropdown = () => {
+        setSettingsDropdownOpen(prev => !prev);
+    };
+
     const clearNotifications = () => {
         setNotifications([]);
     };
 
-    // Breadcrumbs logic
     const generateBreadcrumbs = () => {
         const pathnames = location.pathname.split('/').filter((x) => x);
         return (
@@ -69,11 +92,19 @@ const Navbar = ({ isAuthenticated, setIsAuthenticated, encryptionKey }) => {
         );
     };
 
+    const handleFontSizeChange = (event) => {
+        const newSize = event.target.value;
+        setFontSize(newSize);
+        // Update the global font size variable
+        document.documentElement.style.setProperty('--base-font-size', `${newSize}px`);
+    };
+
     return (
         <nav className="navbar">
             <div className="navbar-container">
                 <Link to="/" className="navbar-logo">
-                    Data Encryption and Decryption
+                    <img src={logo} alt="Logo" className="logo-circle" />
+                    <span>Data Encryption and Decryption</span>
                 </Link>
                 <ul className="navbar-menu">
                     <li className="navbar-item">
@@ -95,49 +126,77 @@ const Navbar = ({ isAuthenticated, setIsAuthenticated, encryptionKey }) => {
                             </Link>
                         </li>
                     ) : (
-                        <>
-                            <li className="navbar-item" onClick={toggleDropdown}>
-                                <span className="navbar-links notification">
-                                    <FontAwesomeIcon icon={faBell} />
-                                    {notifications.length > 0 && (
-                                        <span className="notification-bubble">
-                                            {notifications.length}
-                                        </span>
-                                    )}
-                                    Notifications
-                                </span>
-                                {dropdownOpen && (
-                                    <div className="notification-dropdown">
-                                        {notifications.length > 0 ? (
-                                            <>
-                                                {notifications.map((note, index) => (
-                                                    <div key={index} className="notification-item">
-                                                        {note}
-                                                    </div>
-                                                ))}
-                                                <button className="clear-notifications" onClick={clearNotifications}>
-                                                    Clear Notifications
-                                                </button>
-                                            </>
-                                        ) : (
-                                            <div className="notification-item">No notifications at the moment</div>
-                                        )}
-                                    </div>
+                        <li className="navbar-item" onClick={toggleDropdown}>
+                            <span className="navbar-links notification">
+                                <FontAwesomeIcon icon={faBell} />
+                                {notifications.length > 0 && (
+                                    <span className="notification-bubble">
+                                        {notifications.length}
+                                    </span>
                                 )}
-                            </li>
-                            <li className="navbar-item" onClick={handleLogoutClick}>
-                                <span className="navbar-links" style={{ cursor: 'pointer' }}>
-                                    <FontAwesomeIcon icon={faSignOutAlt} /> Logout
-                                </span>
-                            </li>
-                        </>
+                                Notifications
+                            </span>
+                            {dropdownOpen && (
+                                <div className="notification-dropdown">
+                                    {notifications.length > 0 ? (
+                                        <>
+                                            {notifications.map((note, index) => (
+                                                <div key={index} className="notification-item">
+                                                    {note}
+                                                </div>
+                                            ))}
+                                            <button className="clear-notifications" onClick={clearNotifications}>
+                                                Clear Notifications
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <div className="notification-item">No notifications at the moment</div>
+                                    )}
+                                </div>
+                            )}
+                        </li>
                     )}
+                    <li className="navbar-item settings" onClick={toggleSettingsDropdown}>
+                        <span className="navbar-links">
+                            <FontAwesomeIcon icon={faCog} /> Settings
+                        </span>
+                        {settingsDropdownOpen && (
+                            <div className="settings-dropdown">
+                                <ul>
+                                    <li className="settings-item">
+                                        <Link to="/help" className="navbar-links">
+                                            <FontAwesomeIcon icon={faQuestionCircle} /> Help
+                                        </Link>
+                                    </li>
+                                    <hr />
+                                    <li className="settings-item">
+                                        <label htmlFor="fontSizeSlider" className="navbar-links">Font Size:</label>
+                                        <input
+                                            type="range"
+                                            id="fontSizeSlider"
+                                            min="10"
+                                            max="40"
+                                            value={fontSize}
+                                            onChange={handleFontSizeChange}
+                                            className="font-size-slider"
+                                        />
+                                        <span>{fontSize}px</span>
+                                    </li>
+                                    <hr />
+                                    {isAuthenticated && (
+                                        <li className="settings-item" onClick={handleLogoutClick}>
+                                            <span className="navbar-links" style={{ cursor: 'pointer' }}>
+                                                <FontAwesomeIcon icon={faSignOutAlt} /> Logout
+                                            </span>
+                                        </li>
+                                    )}
+                                </ul>
+                            </div>
+                        )}
+                    </li>
                 </ul>
             </div>
-            {/* Breadcrumbs */}
             {generateBreadcrumbs()}
-
-            {/* Modal for logout success */}
             {logoutModal && (
                 <div className="modal-overlay">
                     <div className="modal-content">
@@ -145,8 +204,6 @@ const Navbar = ({ isAuthenticated, setIsAuthenticated, encryptionKey }) => {
                     </div>
                 </div>
             )}
-
-            {/* Confirmation Modal */}
             {confirmLogout && (
                 <div className="modal-overlay">
                     <div className="modal-content">

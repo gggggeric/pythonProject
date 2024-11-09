@@ -1,0 +1,35 @@
+.help-container {
+    max-width: 800px;
+    margin: 20px auto; /* Adds 20px of margin on top */
+    padding: 20px;
+    background-color: #181C14; /* Dark green background */
+    color: #FFFFFF; /* White text */
+    border: 2px solid #FFFFFF; /* White border */
+    border-radius: 8px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    margin-top: 60px; /* Additional margin from the top */
+}
+
+.help-container h1,
+.help-container h2 {
+    color: #FFFFFF;
+    text-align: center;
+}
+
+.about-developers h2 {
+    text-align: center;
+    margin-top: 30px;
+    color: #FFFFFF;
+}
+
+.about-developers ul {
+    list-style-type: none;
+    padding: 0;
+    text-align: center;
+}
+
+.about-developers li {
+    margin: 10px 0;
+    font-size: 1.1em;
+    color: #FFFFFF;
+}

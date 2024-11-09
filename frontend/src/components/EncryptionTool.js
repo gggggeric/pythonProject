@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './EncryptionTool.css';
 
+// FontAwesome Imports
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faLock, faUnlock, faSync } from '@fortawesome/free-solid-svg-icons';
+
 const EncryptionTool = ({ isAuthenticated, setEncryptionKey }) => {
     const [file, setFile] = useState(null);
     const [key, setKey] = useState('');
@@ -109,6 +113,11 @@ const EncryptionTool = ({ isAuthenticated, setEncryptionKey }) => {
         }
     };
 
+    const handleRefresh = () => {
+        // Refresh the page
+        window.location.reload();
+    };
+
     return (
         <div className="encryption-tool">
             <h1>Data Encryption & Decryption Tool</h1>
@@ -139,9 +148,26 @@ const EncryptionTool = ({ isAuthenticated, setEncryptionKey }) => {
                 )}
                 
                 {isAuthenticated ? (
-                    <button type="submit" disabled={loading}>
-                        {loading ? 'Processing...' : (mode === 'encrypt' ? 'Encrypt File' : 'Decrypt File')}
-                    </button>
+                    <div className="button-group">
+                        <button type="submit" disabled={loading}>
+                            {loading ? (
+                                <>
+                                    <FontAwesomeIcon icon={faLock} spin /> Processing...
+                                </>
+                            ) : mode === 'encrypt' ? (
+                                <>
+                                    <FontAwesomeIcon icon={faLock} /> Encrypt File
+                                </>
+                            ) : (
+                                <>
+                                    <FontAwesomeIcon icon={faUnlock} /> Decrypt File
+                                </>
+                            )}
+                        </button>
+                        <button type="button" onClick={handleRefresh} className="refresh-button">
+                            <FontAwesomeIcon icon={faSync} /> Refresh
+                        </button>
+                    </div>
                 ) : (
                     <p>Please log in to make a transaction.</p>
                 )}
