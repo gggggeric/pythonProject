@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './EncryptionTool.css';
-
-// FontAwesome Imports
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLock, faUnlock, faSync } from '@fortawesome/free-solid-svg-icons';
+import { faLock, faUnlock, faSync, faFileUpload, faKey } from '@fortawesome/free-solid-svg-icons';
 
 const EncryptionTool = ({ isAuthenticated, setEncryptionKey }) => {
     const [file, setFile] = useState(null);
@@ -18,12 +16,12 @@ const EncryptionTool = ({ isAuthenticated, setEncryptionKey }) => {
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
-        setMessage(''); // Clear any previous messages
+        setMessage('');
     };
 
     const handleModeChange = (e) => {
         setMode(e.target.value);
-        setMessage(''); // Clear any previous messages
+        setMessage('');
     };
 
     const handleSubmit = async (e) => {
@@ -33,7 +31,6 @@ const EncryptionTool = ({ isAuthenticated, setEncryptionKey }) => {
             return;
         }
 
-        // Check if file extension is .enc when in decryption mode
         if (mode === 'decrypt' && !file.name.endsWith('.enc')) {
             setMessage('Error: Please select a file with a .enc extension for decryption.');
             return;
@@ -46,9 +43,7 @@ const EncryptionTool = ({ isAuthenticated, setEncryptionKey }) => {
 
         const formData = new FormData();
         formData.append('file', file);
-        if (mode === 'decrypt') {
-            formData.append('key', key);
-        }
+        if (mode === 'decrypt') formData.append('key', key);
 
         setLoading(true);
         setUploadProgress(0);
@@ -72,7 +67,6 @@ const EncryptionTool = ({ isAuthenticated, setEncryptionKey }) => {
 
             if (mode === 'encrypt') {
                 const { encryption_key, file_name, file } = response.data;
-                alert(`Encryption successful! Your key is: ${encryption_key}. Please keep it safe.`);
                 setEncryptionKey(encryption_key);
 
                 const blob = new Blob([Uint8Array.from(atob(file), (c) => c.charCodeAt(0))]);
@@ -82,16 +76,12 @@ const EncryptionTool = ({ isAuthenticated, setEncryptionKey }) => {
                 document.body.appendChild(link);
                 link.click();
                 link.remove();
-            }
-
-            if (mode === 'decrypt') {
+            } else if (mode === 'decrypt') {
                 const contentDisposition = response.headers['content-disposition'];
                 let original_filename = file.name.replace('.enc', '');
                 if (contentDisposition) {
                     const matches = contentDisposition.match(/filename="?([^";]+)"?/);
-                    if (matches && matches[1]) {
-                        original_filename = matches[1];
-                    }
+                    if (matches && matches[1]) original_filename = matches[1];
                 }
 
                 const blob = response.data;
@@ -113,22 +103,18 @@ const EncryptionTool = ({ isAuthenticated, setEncryptionKey }) => {
         }
     };
 
-    const handleRefresh = () => {
-        // Refresh the page
-        window.location.reload();
-    };
+    const handleRefresh = () => window.location.reload();
 
     return (
         <div className="encryption-tool">
             <h1>Data Encryption & Decryption Tool</h1>
             <form onSubmit={handleSubmit}>
                 <label>
-                    Select File:
+                    <FontAwesomeIcon icon={faFileUpload} /> Select File:
                     <input type="file" onChange={handleFileChange} />
                 </label>
-                
                 <label>
-                    Operation:
+                    <FontAwesomeIcon icon={faLock} /> Operation:
                     <select value={mode} onChange={handleModeChange}>
                         <option value="encrypt">Encrypt</option>
                         <option value="decrypt">Decrypt</option>
@@ -137,13 +123,8 @@ const EncryptionTool = ({ isAuthenticated, setEncryptionKey }) => {
                 
                 {mode === 'decrypt' && (
                     <label>
-                        Decryption Key:
-                        <input
-                            type="text"
-                            value={key}
-                            onChange={(e) => setKey(e.target.value)}
-                            placeholder="Enter the decryption key"
-                        />
+                        <FontAwesomeIcon icon={faKey} /> Decryption Key:
+                        <input type="text" value={key} onChange={(e) => setKey(e.target.value)} placeholder="Enter the decryption key" />
                     </label>
                 )}
                 
@@ -169,14 +150,13 @@ const EncryptionTool = ({ isAuthenticated, setEncryptionKey }) => {
                         </button>
                     </div>
                 ) : (
-                    <p>Please log in to make a transaction.</p>
+                    <p>You must log in to use the tool.</p>
                 )}
-            </form>
+                
+                {message && <p className="error-message">{message}</p>}
 
-            {showModal && (
-                <div className="modal-overlay">
-                    <div className="modal">
-                        <h2>{loading ? 'Processing File' : 'Download in Progress'}</h2>
+                {loading && (
+                    <>
                         <div className="progress-bar">
                             <label>Upload Progress:</label>
                             <progress value={uploadProgress} max="100">{uploadProgress}%</progress>
@@ -185,11 +165,18 @@ const EncryptionTool = ({ isAuthenticated, setEncryptionKey }) => {
                             <label>Download Progress:</label>
                             <progress value={downloadProgress} max="100">{downloadProgress}%</progress>
                         </div>
+                    </>
+                )}
+            </form>
+
+            {showModal && (
+                <div className="modal-overlay">
+                    <div className="modal">
+                        <h2>Processing your file...</h2>
+                        <p>Please wait. This may take a few moments.</p>
                     </div>
                 </div>
             )}
-
-            {message && <p className={message.includes('Error') ? 'error-message' : ''}>{message}</p>}
         </div>
     );
 };

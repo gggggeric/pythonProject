@@ -1,5 +1,4 @@
-/* EncryptionTool.css */
-
+/* Main Container Styling */
 .encryption-tool {
     max-width: 500px;
     margin: 50px auto;
@@ -16,8 +15,10 @@
 .encryption-tool h1 {
     font-size: 28px;
     margin-bottom: 25px;
+    color: #61dafb;
 }
 
+/* Form Styles */
 .encryption-tool form {
     display: flex;
     flex-direction: column;
@@ -26,9 +27,10 @@
 
 .encryption-tool label {
     width: 100%;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     text-align: left;
     font-weight: bold;
+    color: #ddd;
 }
 
 .encryption-tool input[type="file"],
@@ -37,13 +39,13 @@
     width: 100%;
     padding: 12px;
     margin-top: 5px;
-    border: 1px solid #ccc;
+    border: 1px solid #555;
     border-radius: 5px;
     background-color: #f0f0f0;
     color: #333;
     font-size: 16px;
-    box-sizing: border-box;
     transition: border-color 0.3s;
+    box-sizing: border-box;
 }
 
 .encryption-tool input[type="file"]:focus,
@@ -53,21 +55,21 @@
     outline: none;
 }
 
-/* Updated button styles */
+/* Button Styling */
 .encryption-tool button {
     padding: 12px 20px;
-    background-color: #3C3D37; /* Updated background color */
-    color: white; /* White text */
-    border: 2px solid white; /* White border */
+    background-color: #3C3D37;
+    color: white;
+    border: 2px solid #61dafb;
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
     transition: background-color 0.3s, transform 0.2s;
-    animation: buttonAnimation 0.5s ease-in-out;
+    animation: buttonPulse 1s ease-in-out infinite;
 }
 
 .encryption-tool button:hover {
-    background-color: #5f6259; /* Darker shade on hover */
+    background-color: #5f6259;
     transform: translateY(-3px);
 }
 
@@ -75,16 +77,23 @@
     display: flex;
     justify-content: center;
     gap: 20px;
-    margin-top: 15px; /* Adds space above the buttons */
+    margin-top: 15px;
 }
 
+/* Error and Status Message Styling */
 .encryption-tool p {
     margin-top: 20px;
     color: #61dafb;
     font-weight: bold;
 }
 
-/* Modal styles */
+.error-message {
+    color: red;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+/* Modal Styling */
 .modal-overlay {
     position: fixed;
     top: 0;
@@ -107,7 +116,6 @@
     width: 300px;
     text-align: center;
     color: white;
-    opacity: 0;
     animation: fadeInContent 0.5s forwards 0.3s;
 }
 
@@ -120,23 +128,22 @@
 .modal-content button {
     margin-top: 15px;
     padding: 10px 15px;
-    background-color: #3C3D37; /* Updated background color */
-    color: white; /* White text */
-    border: 2px solid white; /* White border */
+    background-color: #3C3D37;
+    color: white;
+    border: 2px solid #61dafb;
     cursor: pointer;
     font-size: 16px;
     transition: background-color 0.3s;
-    animation: buttonAnimation 0.5s ease-in-out;
+    animation: buttonPulse 1s ease-in-out infinite;
 }
 
 .modal-content button:hover {
-    background-color: #5f6259; /* Darker shade on hover */
+    background-color: #5f6259;
 }
 
-/* Progress bars */
+/* Progress Bars */
 .progress-bars {
     margin-top: 15px;
-    opacity: 0;
     animation: fadeInContent 0.5s forwards 0.5s;
 }
 
@@ -152,7 +159,6 @@ progress {
     height: 20px;
     border-radius: 10px;
     overflow: hidden;
-    opacity: 0;
     animation: fadeInProgress 1s forwards 1s;
 }
 
@@ -166,14 +172,7 @@ progress::-webkit-progress-value {
     border-radius: 10px;
 }
 
-/* Error message styling */
-.error-message {
-    color: red;
-    font-weight: bold;
-    margin-top: 10px;
-}
-
-/* Keyframe animations */
+/* Keyframe Animations */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -203,19 +202,16 @@ progress::-webkit-progress-value {
     }
 }
 
-@keyframes buttonAnimation {
-    0% {
+@keyframes buttonPulse {
+    0%, 100% {
         transform: scale(1);
     }
     50% {
-        transform: scale(1.1);
-    }
-    100% {
-        transform: scale(1);
+        transform: scale(1.05);
     }
 }
 
-/* Responsive styles */
+/* Responsive Styles */
 @media (max-width: 768px) {
     .encryption-tool {
         padding: 20px;
